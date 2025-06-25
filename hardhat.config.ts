@@ -56,12 +56,15 @@ const config: HardhatUserConfig = {
         'hedera-testnet': {
             eid: EndpointId.HEDERA_V2_TESTNET,
             url: 'http://localhost:7546',
+            chainId: 296,
             accounts,
         },
         'bsc-testnet': {
             eid: EndpointId.BSC_V2_TESTNET,
             url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+            chainId: 97,
             accounts,
+            gasPrice: 20000000000,
         },
         hardhat: {
             // Need this for testing because TestHelperOz5.sol is exceeding the compiled contract size limit

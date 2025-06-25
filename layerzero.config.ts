@@ -1,61 +1,64 @@
 import { EndpointId } from '@layerzerolabs/lz-definitions'
-import { ExecutorOptionType } from '@layerzerolabs/lz-v2-utilities'
-import { TwoWayConfig, generateConnectionsConfig } from '@layerzerolabs/metadata-tools'
-import { OAppEnforcedOption } from '@layerzerolabs/toolbox-hardhat'
-
-import type { OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
-
-const hederaContract: OmniPointHardhat = {
-    eid: EndpointId.HEDERA_V2_TESTNET,
-    contractName: 'MyOFT',
-}
-
-const bscContract: OmniPointHardhat = {
+const bsc_testnetContract = {
     eid: EndpointId.BSC_V2_TESTNET,
     contractName: 'MyOFT',
 }
-
-// To connect all the above chains to each other, we need the following pathways:
-// Optimism <-> Avalanche
-// Optimism <-> Arbitrum
-// Avalanche <-> Arbitrum
-
-// For this example's simplicity, we will use the same enforced options values for sending to all chains
-// For production, you should ensure `gas` is set to the correct value through profiling the gas usage of calling OFT._lzReceive(...) on the destination chain
-// To learn more, read https://docs.layerzero.network/v2/concepts/applications/oapp-standard#execution-options-and-enforced-settings
-const EVM_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
-    {
-        msgType: 1,
-        optionType: ExecutorOptionType.LZ_RECEIVE,
-        gas: 80000,
-        value: 0,
-    },
-]
-
-// With the config generator, pathways declared are automatically bidirectional
-// i.e. if you declare A,B there's no need to declare B,A
-const pathways: TwoWayConfig[] = [
-    [
-        hederaContract, // Chain A contract
-        bscContract, // Chain B contract
-        [['LayerZero Labs'], []], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
-        [1, 1], // [A to B confirmations, B to A confirmations]
-        [EVM_ENFORCED_OPTIONS, EVM_ENFORCED_OPTIONS], // Chain B enforcedOptions, Chain A enforcedOptions
+const hedera_testnetContract = {
+    eid: EndpointId.HEDERA_V2_TESTNET,
+    contractName: 'MyOFT',
+}
+export default {
+    contracts: [{ contract: bsc_testnetContract }, { contract: hedera_testnetContract }],
+    connections: [
+        {
+            from: bsc_testnetContract,
+            to: hedera_testnetContract,
+            config: {
+                sendLibrary: '0x55f16c442907e86D764AFdc2a07C2de3BdAc8BB7',
+                receiveLibraryConfig: { receiveLibrary: '0x188d4bbCeD671A7aA2b5055937F79510A32e9683', gracePeriod: 0 },
+                sendConfig: {
+                    executorConfig: { maxMessageSize: 10000, executor: '0x31894b190a8bAbd9A067Ce59fde0BfCFD2B18470' },
+                    ulnConfig: {
+                        confirmations: 5,
+                        requiredDVNs: ['0x0eE552262f7B562eFcED6DD4A7e2878AB897d405'],
+                        optionalDVNs: [],
+                        optionalDVNThreshold: 0,
+                    },
+                },
+                receiveConfig: {
+                    ulnConfig: {
+                        confirmations: 1,
+                        requiredDVNs: ['0x0eE552262f7B562eFcED6DD4A7e2878AB897d405'],
+                        optionalDVNs: [],
+                        optionalDVNThreshold: 0,
+                    },
+                },
+            },
+        },
+        {
+            from: hedera_testnetContract,
+            to: bsc_testnetContract,
+            config: {
+                sendLibrary: '0x1707575F7cEcdC0Ad53fde9ba9bda3Ed5d4440f4',
+                receiveLibraryConfig: { receiveLibrary: '0xc0c34919A04d69415EF2637A3Db5D637a7126cd0', gracePeriod: 0 },
+                sendConfig: {
+                    executorConfig: { maxMessageSize: 10000, executor: '0xe514D331c54d7339108045bF4794F8d71cad110e' },
+                    ulnConfig: {
+                        confirmations: 1,
+                        requiredDVNs: ['0xEc7Ee1f9e9060e08dF969Dc08EE72674AfD5E14D'],
+                        optionalDVNs: [],
+                        optionalDVNThreshold: 0,
+                    },
+                },
+                receiveConfig: {
+                    ulnConfig: {
+                        confirmations: 5,
+                        requiredDVNs: ['0xEc7Ee1f9e9060e08dF969Dc08EE72674AfD5E14D'],
+                        optionalDVNs: [],
+                        optionalDVNThreshold: 0,
+                    },
+                },
+            },
+        },
     ],
-    [
-        bscContract, // Chain A contract
-        hederaContract, // Chain C contract
-        [['LayerZero Labs'], []], // [ requiredDVN[], [ optionalDVN[], threshold ] ]
-        [1, 1], // [A to B confirmations, B to A confirmations]
-        [EVM_ENFORCED_OPTIONS, EVM_ENFORCED_OPTIONS], // Chain C enforcedOptions, Chain A enforcedOptions
-    ],
-]
-
-export default async function () {
-    // Generate the connections config based on the pathways
-    const connections = await generateConnectionsConfig(pathways)
-    return {
-        contracts: [{ contract: hederaContract }, { contract: bscContract }],
-        connections,
-    }
 }

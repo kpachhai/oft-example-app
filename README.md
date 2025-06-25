@@ -147,7 +147,7 @@ export default {
 </details>
 
 <details>
-<summary> <a href="https://docs.layerzero.network/v2/developers/evm/create-lz-oapp/wiring"><code>npx hardhat lz:oapp:config:wire --oapp-config YOUR_OAPP_CONFIG</code></a> </summary>
+<summary> <a href="https://docs.layerzero.network/v2/developers/evm/create-lz-oapp/wiring"><code>npx hardhat lz:oapp:wire --oapp-config YOUR_OAPP_CONFIG</code></a> </summary>
 
  <br>
 
@@ -258,7 +258,7 @@ If you do NOT explicitly set each configuration parameter, your OApp will fallba
 
 </details>
 <details>
-<summary> <a href="https://docs.layerzero.network/v2/developers/evm/create-lz-oapp/wiring#checking-pathway-executor"><code>npx hardhat lz:oapp:config:get:executor --oapp-config YOUR_OAPP_CONFIG</code></a> </summary>
+<summary> <a href="https://docs.layerzero.network/v2/developers/evm/create-lz-oapp/wiring#checking-pathway-executor"><code>npx hardhat lz:oapp:config:get:executor</code></a> </summary>
 
  <br>
 

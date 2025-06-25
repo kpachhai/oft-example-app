@@ -11,4 +11,13 @@ contract MyOFT is OFT {
         address _lzEndpoint,
         address _delegate
     ) OFT(_name, _symbol, _lzEndpoint, _delegate) Ownable(_delegate) {}
+
+    /**
+     * @dev Mint tokens to a specified address
+     * @param _to The address to mint tokens to
+     * @param _amount The amount of tokens to mint
+     */
+    function mint(address _to, uint256 _amount) public onlyOwner {
+        _mint(_to, _amount);
+    }
 }
